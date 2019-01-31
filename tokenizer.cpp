@@ -5,7 +5,9 @@
 
 int main(int argc, char **argv)
 {
-  tokenize();
+  while (true)
+    tokenize();
+
   return 0;
 }
 

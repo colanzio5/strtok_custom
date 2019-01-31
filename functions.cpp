@@ -166,7 +166,7 @@ void printtokens(vector<string> tokens)
         }
         cout << ']';
     }
-    cout << "]\n";
+    cout << "\n";
 }
 
 void tokenize()
