@@ -163,6 +163,8 @@ void printtokens(vector<string> tokens)
         for (int i = 0; i < number_tokens; i++)
         {
             cout << '{' << tokens[i] << '}';
+            if (i < number_tokens - 1)
+                cout << ',';
         }
         cout << ']';
     }
