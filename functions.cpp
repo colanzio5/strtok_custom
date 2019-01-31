@@ -106,7 +106,7 @@ vector<string> strtok_custom(string input)
         }
         // parse section
         // handle whitespace
-        if (isspace(c) && !single_quoted && !double_quoted)
+        if (isspace(c) && !single_quoted && !double_quoted && !escaped)
         {
             if (current.length() > 0)
             {
