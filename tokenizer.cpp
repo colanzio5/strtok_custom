@@ -1,8 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "functions.h"
 
+/**
+ * COlIN CASAZZA
+ * CS570 
+ * HW0 - C/C++ PROFICIENCY
+ * DUE: 1/31/19 
+ * 
+ * see functions.cpp for main source code
+ */
 int main(int argc, char **argv)
 {
   while (true)
@@ -10,15 +17,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
-/**
-
-> let\'s do some "crazy \"air quotes\""
-[{let's},{do},{some},{crazy "air quotes"}]
-    
-> ls | sort >sorted_files.txt 
-[{ls},{|},{sort},{>},{sorted_files.txt}]
-
-> cat -n /etc/fstab 
-[{cat},{-n},{/etc/fstab}]
-*/

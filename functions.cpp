@@ -1,62 +1,45 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-#include <vector>
-
+#include <list>
+#include <iterator>
 #include <readline/readline.h>
-
 using namespace std;
 
-/**
- * takes in string and removes all instances of escape characters
- * @param - str -> the string to clense
-**/
-string removechar(string str, char c)
-{
-    string result;
-    for (size_t i = 0; i < str.size(); i++)
-    {
-        char currentChar = str[i];
-        if (currentChar != c)
-            result += currentChar;
-    }
-    return result;
-}
 /**
  * takes in a char and determines if the char is a special char ->  | ; < > &
  * @param - char *c -> pointer to the char to see if is special
 */
 bool isspecialchar(char c)
 {
-    if (c == '|' || c == ';' || c == '<' || c == '>' || c == '&')
-    {
-        return true;
-    }
-    return false;
+    return c == '|' || c == ';' || c == '<' || c == '>' || c == '&' ? true : false;
 }
 
 /**
  * takes in a raw string and parses out the tokens from the string
  * @param - input - the raw string to parse
- * returns - vector of strings that contain all tokens in the string  
+ * returns - list of strings that contain all tokens in the string  
+ * 
  *
 */
-vector<string> strtok_custom(string input)
+list<string> strtok_custom(string input)
 {
-    int length = input.length() + 1;
-    int index = 0;
+    int length = input.length() + 1; // length of the string input
+    int index = 0;                   // current index in parseing of string
 
-    string current;
-    vector<string> tokens;
+    string current;      // holds the current token
+    list<string> tokens; // holds the parsed tokens
 
-    // state variables
-    bool escaped = false;
-    bool single_quoted = false;
-    bool double_quoted = false;
-    bool remove_current = false;
+    bool escaped = false;        // indicates if current char is escaped
+    bool single_quoted = false;  // indicates if current char is in single quotes
+    bool double_quoted = false;  // indicates if current char is in double quotes
+    bool remove_current = false; // indicates if the current char will not be included in token
 
     for (index; index < length; index++)
     {
+        // ------------------
+        // UPDATE CURRENT STATE
+        // ------------------
         // current character
         char c = input[index];
 
@@ -64,12 +47,12 @@ vector<string> strtok_custom(string input)
         remove_current = false;
         escaped = false;
 
-        // update escaped state
+        // update escaped state (escape chars don't work in single quotes)
         if (input[index - 1] == '\\' && !single_quoted)
             escaped = true;
 
-        // update escaped state
-        if (input[index] == '\\' && !single_quoted && !escaped)
+        // if escaped were removing the current char
+        if (c == '\\' && !single_quoted && !escaped)
             remove_current = true;
 
         // update single quoted state
@@ -88,7 +71,7 @@ vector<string> strtok_custom(string input)
                     remove_current = true;
             }
         }
-        // update double quote state
+        // update double quote state (mirror section for updating single quote state)
         if (c == '\"' && !escaped && !single_quoted)
         {
             if (!double_quoted)
@@ -104,10 +87,14 @@ vector<string> strtok_custom(string input)
                     remove_current = true;
             }
         }
-        // parse section
-        // handle whitespace
+
+        // ------------------
+        // PARSE CURRENT CHAR
+        // ------------------
+        // handle whitespace (ends token if not in quotes and not escaped)
         if (isspace(c) && !single_quoted && !double_quoted && !escaped)
         {
+            // end the current token if the token isn't empty
             if (current.length() > 0)
             {
                 tokens.push_back(current);
@@ -117,7 +104,7 @@ vector<string> strtok_custom(string input)
         // handle special characters
         else if (isspecialchar(c) && !escaped)
         {
-            // end the current token
+            // end the current token if the token isn't empty
             if (current.length() > 0)
             {
                 tokens.push_back(current);
@@ -130,6 +117,7 @@ vector<string> strtok_custom(string input)
         // handle end of file
         else if (c == '\0')
         {
+            // end the current token if the token isn't empty
             if (current.length() > 0)
             {
                 tokens.push_back(current);
@@ -137,34 +125,35 @@ vector<string> strtok_custom(string input)
             }
         }
         // if we made it this far add the char to the current token
-        else
-        {
-            // if the char is marked to keep add it to the current token
-            if (!remove_current)
-            {
-                current += c;
-            }
-        }
+        // (unless we're removing the current char)
+        else if (!remove_current)
+            current += c;
     }
+    // once complete return the tokens we've found
     return tokens;
 }
 
 /**
- * takes in a vector of strings and prints each
+ * takes in a list of strings and prints each
  * format -> [{token 1},{token 2}]
- * @param - tokens - the token vector to print
+ * @param - tokens - the token list to print
 */
-void printtokens(vector<string> tokens)
+void printtokens(list<string> tokens)
 {
     int number_tokens = tokens.size();
+    int i = 0;
+
     if (number_tokens > 0)
     {
+        list<string>::iterator it;
         cout << '[';
-        for (int i = 0; i < number_tokens; i++)
+        for (it = tokens.begin(); it != tokens.end(); ++it)
         {
-            cout << '{' << tokens[i] << '}';
+            cout << '{' << *it << '}';
             if (i < number_tokens - 1)
                 cout << ',';
+
+            i++;
         }
         cout << ']';
     }
@@ -173,10 +162,10 @@ void printtokens(vector<string> tokens)
 
 void tokenize()
 {
+    // alocate tokens list
+    list<string> tokens;
     // get user input and parse
-    vector<string> tokens;
     tokens = strtok_custom(readline("> "));
-
     // print out each token
     printtokens(tokens);
 }
