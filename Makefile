@@ -3,10 +3,8 @@
 CC=g++ # define the compiler to use
 TARGET=tokenizer # define the name of the executable
 SOURCES=tokenizer.cpp functions.cpp
-CFLAGS=-O3
-LFLAGS=-lm -lreadline
-
-
+CFLAGS=-O3 
+LFLAGS=
 
 # define list of objects
 OBJSC=$(SOURCES:.c=.o)
@@ -16,7 +14,7 @@ OBJS=$(OBJSC:.cpp=.o)
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o $(TARGET)
+	$(CC) $(LFLAGS) $(OBJS) -o $(TARGET) -lreadline
 
 purge: clean
 	rm -f $(TARGET)

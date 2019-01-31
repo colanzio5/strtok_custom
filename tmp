@@ -1,2 +1,2 @@
-[?1034h> echo Once upon a time >bedtime.txt
+> echo Once upon a time >bedtime.txt
 [{echo},{Once},{upon},{a},{time},{>},{bedtime.txt}]

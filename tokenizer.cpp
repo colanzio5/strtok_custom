@@ -3,7 +3,8 @@
 
 #include "functions.h"
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv)
+{
   tokenize();
   return 0;
 }
@@ -19,4 +20,3 @@ int main(int argc, char ** argv) {
 > cat -n /etc/fstab 
 [{cat},{-n},{/etc/fstab}]
 */
-
