@@ -35,7 +35,12 @@ bool isspecialchar(char c)
     return false;
 }
 
-// So long "and thanks's for the fishes"
+/**
+ * takes in a raw string and parses out the tokens from the string
+ * @param - input - the raw string to parse
+ * returns - vector of strings that contain all tokens in the string  
+ *
+*/
 vector<string> strtok_custom(string input)
 {
     int length = input.length() + 1;
@@ -131,7 +136,7 @@ vector<string> strtok_custom(string input)
                 current.clear();
             }
         }
-        // otherwise add the char to the current token
+        // if we made it this far add the char to the current token
         else
         {
             // if the char is marked to keep add it to the current token
@@ -140,178 +145,36 @@ vector<string> strtok_custom(string input)
                 current += c;
             }
         }
-        // cout << "char: " << c << " , escaped: " << escaped << ", single quoted: " << single_quoted << " , double quoted: " << double_quoted << ", current: " << current << '\n';
     }
     return tokens;
 }
 
+/**
+ * takes in a vector of strings and prints each
+ * format -> [{token 1},{token 2}]
+ * @param - tokens - the token vector to print
+*/
+void printtokens(vector<string> tokens)
+{
+    int number_tokens = tokens.size();
+    if (number_tokens > 0)
+    {
+        cout << '[';
+        for (int i = 0; i < number_tokens; i++)
+        {
+            cout << '{' << tokens[i] << '}';
+        }
+        cout << ']';
+    }
+    cout << "]\n";
+}
+
 void tokenize()
 {
-
+    // get user input and parse
     vector<string> tokens;
     tokens = strtok_custom(readline("> "));
 
-    if (tokens.size() > 0)
-    {
-        cout << '[';
-        for (vector<string>::const_iterator i = tokens.begin(); i != tokens.end(); ++i)
-        {
-            cout << '{' << *i << '}';
-            if (i < tokens.end() - 1)
-            {
-                cout << ',';
-            }
-        }
-
-        cout << "]\n";
-    }
-    else
-    {
-        cout << '\n';
-    }
+    // print out each token
+    printtokens(tokens);
 }
-
-// /**
-//  * takes a string (read in by tokenize()) and returns vector of tokens
-//  * @param - str -> the string we want to split into tokens
-// */
-// vector<string> strtok_custom(const string &input)
-// {
-//     // temp storage for manipulating the input string
-//     string str = input;
-//     // current token string
-//     string current;
-//     // total number of chars in input string
-//     int total = str.length();
-//     // markers for tracking the start char index of tokens
-//     int tail = 0;
-//     // storage for the tokens in the string
-//     vector<string> tokens;
-//     // state vector
-//     vector<int> state;
-//     state.push_back(0); // is escaped
-//     state.push_back(0); // is in single quotes
-//     state.push_back(0); // is in double quotes
-
-//     /**
-//      * iterate through each character in the input string
-//      * for each character calculate the new state, then pass
-//      * the current char into the state machine which adds new
-//      * tokens to vector on valid states
-//     **/
-//     int i = 0;
-//     for (i; i < total; i++)
-//     {
-//         // calculate the state for is escaped
-//         str[i - 1] == '\\' ? state[0] = 1 : state[0] = 0;
-
-//         // calculate the new state for is in single quotes
-//         if (str[i] == '\'' && state[0] != 1)
-//         {
-//             // if were not in single quotes and not in double quotes
-//             // then then a single quote has started
-//             if (state[1] == 0 && state[2] == 0)
-//             {
-//                 // were in single quotes now
-//                 state[1] = 1;
-//                 // parse the quote out of the string so it doesnt end up in the token
-//                 string tmp = str.substr(0, i);
-//                 tmp.append(str.substr(i + 1, total));
-//                 str = tmp;
-//                 total--;
-//             }
-//             else if (state[1] == 1 && state[2] == 0)
-//             {
-//                 // were not in single quotes anymore
-//                 state[1] = 0;
-//                 // parse the quote out of the string so it doesnt end up in the token
-//                 string tmp = str.substr(0, i);
-//                 tmp.append(str.substr(i + 1, total));
-//                 str = tmp;
-//                 total--;
-//             }
-//         }
-//         // calculate new state for is in double quotes (mirrors is in sinle quotes)
-//         if (str[i] == '\"' && state[0] != 1)
-//         {
-//             if (state[2] == 0 && state[1] == 0)
-//             {
-//                 state[2] = 1;
-//                 string tmp = str.substr(0, i);
-//                 tmp.append(str.substr(i + 1, total));
-//                 str = tmp;
-//                 total--;
-//             }
-//             else if (state[2] == 1)
-//             {
-//                 state[2] = 0;
-//                 string tmp = str.substr(0, i);
-//                 tmp.append(str.substr(i + 1, total));
-//                 str = tmp;
-//                 total--;
-//             }
-//         }
-//         // if we hit a space, end the token, unless were in single or double quotes
-//         else if (isspace(str[i]) && state[1] == 0 && state[2] == 0)
-//         {
-//             // make sure were not adding an empty token
-//             if (i - tail != 0)
-//             {
-//                 // end current token and add to tokens
-//                 current = str.substr(tail, i - tail);
-//                 tokens.push_back(current);
-//             }
-//             // progress token marker
-//             tail = i + 1;
-//         }
-//         // if we hit a space, end the token, unless were in single or double quotes or the character has been escaped
-//         else if (isspecialchar(str[i]) == 1 && state[0] != 1 && state[1] != 1 && state[2] != 1)
-//         {
-//             // make sure were not adding an empty token
-//             if (i - tail != 0)
-//             {
-//                 // end current token and add to tokens
-//                 current = str.substr(tail, i - tail);
-//                 tokens.push_back(current);
-//             }
-
-//             // add special char to tokens
-//             current = str.substr(i, 1);
-//             tokens.push_back(current);
-//             // progress token marker
-//             tail = i + 1;
-//         }
-
-//         // handle escape characters
-//         else if (str[i] == '\\' && state[0] != 1 && state[1] != 1)
-//         {
-//             // parse the escape character out of the string so it doesnt end up in the token
-//             string tmp = str.substr(0, i);
-//             tmp.append(str.substr(i + 1, total));
-//             str = tmp;
-//             total--;
-//         }
-
-//         // handle end of string
-//         else if (str[i] == '\0')
-//         {
-//             // end current token and add to tokens
-//             current = str.substr(tail, i - tail);
-//             tokens.push_back(current);
-//             tail = i;
-//             cout << "edndnd";
-//         }
-//         cout << "char: " << str[i] << " , state[0]: " << state[0] << " , state[1]: " << state[1] << " , state[2]: " << state[2] << '\n';
-//     }
-
-//     // push anyhing left on as a token
-//     // make sure were not adding an empty token
-//     if (i - tail != 0)
-//     {
-//         // end current token and add to tokens
-//         current = str.substr(tail, i - tail);
-//         tokens.push_back(current);
-//     }
-
-//     return tokens;
-// }
