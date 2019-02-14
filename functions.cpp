@@ -1,7 +1,11 @@
 #include <iostream>
 #include <stdlib.h>
+#include <sys/wait.h>
+#include <sys/procfs.h>
 #include <stdio.h>
-#include <list>
+#include <wait.h>
+#include <unistd.h>
+#include <vector>
 #include <iterator>
 #include <readline/readline.h>
 using namespace std;
@@ -10,7 +14,7 @@ using namespace std;
  * takes in a char and determines if the char is a special char ->  | ; < > &
  * @param - char *c -> pointer to the char to see if is special
 */
-bool isspecialchar(char c)
+bool is_special_char(char c)
 {
     return c == '|' || c == ';' || c == '<' || c == '>' || c == '&' ? true : false;
 }
@@ -18,17 +22,17 @@ bool isspecialchar(char c)
 /**
  * takes in a raw string and parses out the tokens from the string
  * @param - input - the raw string to parse
- * returns - list of strings that contain all tokens in the string  
+ * returns - vector of strings that contain all tokens in the string  
  * 
  *
 */
-list<string> strtok_custom(string input)
+vector<string> strtok_custom(string input)
 {
     int length = input.length() + 1; // length of the string input
     int index = 0;                   // current index in parseing of string
 
-    string current;      // holds the current token
-    list<string> tokens; // holds the parsed tokens
+    string current;        // holds the current token
+    vector<string> tokens; // holds the parsed tokens
 
     bool escaped = false;        // indicates if current char is escaped
     bool single_quoted = false;  // indicates if current char is in single quotes
@@ -102,7 +106,7 @@ list<string> strtok_custom(string input)
             }
         }
         // handle special characters
-        else if (isspecialchar(c) && !escaped)
+        else if (is_special_char(c) && !escaped)
         {
             // end the current token if the token isn't empty
             if (current.length() > 0)
@@ -134,18 +138,18 @@ list<string> strtok_custom(string input)
 }
 
 /**
- * takes in a list of strings and prints each
+ * takes in a vector of strings and prints each
  * format -> [{token 1},{token 2}]
- * @param - tokens - the token list to print
+ * @param - tokens - the token vector to print
 */
-void printtokens(list<string> tokens)
+void print_tokens(vector<string> tokens)
 {
     int number_tokens = tokens.size();
     int i = 0;
 
     if (number_tokens > 0)
     {
-        list<string>::iterator it;
+        vector<string>::iterator it;
         cout << '[';
         for (it = tokens.begin(); it != tokens.end(); ++it)
         {
@@ -160,12 +164,139 @@ void printtokens(list<string> tokens)
     cout << "\n";
 }
 
+const char *str_to_char(string str)
+{
+    return str.c_str();
+}
+
+std::string get_pwd()
+{
+    try
+    {
+        char temp[10000];
+        return (getcwd(temp, sizeof(temp)) ? std::string(temp) : std::string(""));
+    }
+    catch (const std::exception &e)
+    {
+        cout << "Unable to obtain current directory " << '\n';
+    }
+}
+
+void run_shell_cmd(vector<string> tokens, int &index)
+{
+
+    string token = tokens[index];
+
+    if (token == "cd")
+    {
+        if (++index < tokens.size())
+        {
+            string cmd = tokens[index];
+            if (chdir(cmd.c_str()) == -1)
+            {
+                cout << "Directory does not exist or is not accessible." << '\n';
+            }
+        }
+        else
+        {
+            cout << token << " - accepts exactly one argument" << '\n';
+        }
+    }
+    else if (token == "pwd")
+    {
+        cout << get_pwd() << '\n';
+    }
+    else
+    {
+        cout << token << "  - cmd not implemented \n";
+    }
+}
+
+void run_system_cmd(vector<string> tokens, int &index)
+{
+    vector<char *> argv;
+    int start = index;
+    for (index; index < tokens.size() && tokens[index] != ";" && tokens[index] != "|"; index++)
+    {
+        argv.push_back(const_cast<char *>(tokens[index].c_str()));
+    }
+
+    string last_token = tokens.back();
+
+    if (last_token == "|")
+    {
+        cout << "Pipe not implemented\n";
+    }
+
+    argv.push_back(NULL);
+
+    // run the command
+    pid_t child_pid = fork();
+    int child_status;
+    int loc;
+
+    // check if the fork failed
+    if (child_pid < 0)
+    {
+        cout << "Unable to spawn program";
+        return;
+    }
+
+    // if were in the child pid
+    if (child_pid == 0)
+    {
+        child_status = execvp(argv[0], &argv[0]);
+        cout << "Unable to execute" << argv[1] << '\n';
+    }
+    // or the parent
+    else
+    {
+        waitpid(child_pid, &loc, WUNTRACED);
+    }
+
+    // once parent is done
+    if (child_status < 0)
+    {
+        cout << "Process exited with error \n";
+        return;
+    }
+    else
+    {
+        cout << "Process exited successfully \n";
+        return;
+    }
+}
+
+void execute_commands(vector<string> tokens)
+{
+    for (int i = 0; i < tokens.size(); i++)
+    {
+        string token = tokens[i];
+
+        // handle io redirect tokens
+        if (token == "<" || token == ">" || token == "&")
+        {
+            i++;
+        }
+        // handle shell command tokens
+        else if (token == "cd" || token == "pwd")
+        {
+            run_shell_cmd(tokens, i);
+        }
+        // handle system commands
+        else if (token != ";" && token != "|")
+        {
+            run_system_cmd(tokens, i);
+        }
+    }
+}
+
 void tokenize()
 {
-    // alocate tokens list
-    list<string> tokens;
+    // alocate tokens vector
+    vector<string> tokens;
     // get user input and parse
     tokens = strtok_custom(readline("> "));
-    // print out each token
-    printtokens(tokens);
+    // execute the set of tokens as commands
+    execute_commands(tokens);
 }
