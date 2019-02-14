@@ -1,8 +1,7 @@
-# credit -> https://github.com/lostella/SimpleMakefile/blob/master/Makefile
 
 CC=g++ # define the compiler to use
-TARGET=tokenizer # define the name of the executable
-SOURCES=tokenizer.cpp functions.cpp
+TARGET=MUSH # define the name of the executable
+SOURCES=main.cpp command.cpp tokenizer.cpp
 CFLAGS=-O3 
 LFLAGS=
 

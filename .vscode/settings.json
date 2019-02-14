@@ -3,5 +3,11 @@
         "*.tcc": "cpp",
         "vector": "cpp",
         "iostream": "cpp"
+    },
+
+    {
+        "key": "f8",
+        "command": "workbench.action.tasks.build"
     }
+
 }
