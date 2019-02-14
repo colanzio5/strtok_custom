@@ -11,6 +11,8 @@ void run_shell_cmd(vector<string> tokens, int &index);
 
 void run_system_cmd(vector<string> tokens, int &index);
 
+int getTokenType(string token);
+
 void execute_commands(vector<string> tokens);
 
 #endif // COMMAND_H

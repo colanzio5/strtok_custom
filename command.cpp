@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <stdlib.h>
 #include <sys/wait.h>
@@ -15,6 +13,9 @@ using namespace std;
 using std::string;
 using std::vector;
 
+/**
+ * helper function to get the current directory path
+ */
 void get_pwd()
 {
     try
@@ -28,6 +29,11 @@ void get_pwd()
     }
 }
 
+/**
+ * function to process known shell commands:
+ * * cd
+ * * pwd
+ */
 void run_shell_cmd(vector<string> tokens, int &index)
 {
 
@@ -54,6 +60,10 @@ void run_shell_cmd(vector<string> tokens, int &index)
     }
 }
 
+/**
+ * run a system commad by forking the process and calling the 
+ * set of tokens through execvp
+ */
 void run_system_cmd(vector<string> tokens, int &index)
 {
     // get the subset of tokens thats the next command to run
@@ -76,19 +86,22 @@ void run_system_cmd(vector<string> tokens, int &index)
         cout << "Unable to spawn program";
         return;
     }
-
-    // if were in the child pid...
+    // if the for continues and
+    // were in the child process
     if (child_pid == 0)
     {
         child_status = execvp(argv[0], &argv[0]);
         cout << "\n Unable to execute" << argv[1] << '\n';
     }
-    // otherwise were in the parent pid...
+    // otherwise were in the parent process
+    // and we wait for child to complete
     else
     {
         waitpid(child_pid, &loc, WUNTRACED);
     }
-    // once parent is done...
+    // once the child process has completed
+    // let the user know what the exit
+    // status of the command was
     if (child_status < 0)
     {
         cout << "\n Process exited with error \n";
@@ -101,9 +114,34 @@ void run_system_cmd(vector<string> tokens, int &index)
     }
 }
 
+int getTokenType(string token)
+{
+    // IO_REDIRECT - 1
+    // SHELL COMMAND - 2
+    // SYSTEM COMMAND - 3
+
+    // handle io redirect tokens
+    if (token == "<" || token == ">" || token == "&")
+    {
+        return 1;
+    }
+    // handle known shell command tokens
+    else if (token == "cd" || token == "pwd")
+    {
+        return 2;
+    }
+    // handle othersystem commands
+    else if (token != ";")
+    {
+        return 3;
+    }
+}
+
 void execute_commands(vector<string> tokens)
 {
 
+    // look through the tokens and
+    // replace any pipe with a semi colon
     bool pipe_found = false;
     for (int i = 0; i < tokens.size(); i++)
     {
@@ -113,27 +151,30 @@ void execute_commands(vector<string> tokens)
             tokens[i] = ";";
         }
     }
+    // if we replaced any pipes
+    // let the user know pipes arent implemented
     if (pipe_found)
         cout << "\n Pipe not implemented \n";
 
+    // for each token process
+    // the token as a command
     for (int i = 0; i < tokens.size(); i++)
     {
         string token = tokens[i];
-
-        // handle io redirect tokens
-        if (token == "<" || token == ">" || token == "&")
+        switch (getTokenType(token))
         {
+        case 1:
+            // IO_REDIRECT - 1
             i++;
-        }
-        // handle known shell command tokens
-        else if (token == "cd" || token == "pwd")
-        {
+            break;
+        case 2:
+            // SHELL COMMAND - 2
             run_shell_cmd(tokens, i);
-        }
-        // handle othersystem commands
-        else if (token != ";")
-        {
+            break;
+        case 3:
+            // SYSTEM COMMAND - 3
             run_system_cmd(tokens, i);
+            break;
         }
     }
 }
