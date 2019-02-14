@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <wait.h>
 #include <unistd.h>
+#include <string>
 #include <vector>
 #include <iterator>
 #include <readline/readline.h>
