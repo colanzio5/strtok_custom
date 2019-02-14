@@ -166,15 +166,12 @@ void execute_commands(vector<string> tokens)
         case 1:
             // IO_REDIRECT - 1
             i++;
-            break;
         case 2:
             // SHELL COMMAND - 2
             run_shell_cmd(tokens, i);
-            break;
         case 3:
             // SYSTEM COMMAND - 3
             run_system_cmd(tokens, i);
-            break;
         }
     }
 }
