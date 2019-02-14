@@ -20,7 +20,7 @@ void get_pwd()
     try
     {
         char temp[10000];
-        cout << (getcwd(temp, sizeof(temp)) ? std::string(temp) : std::string("")) << '\n';
+        cout << (getcwd(temp, sizeof(temp)) ? string(temp) : string("")) << '\n';
     }
     catch (const exception &e)
     {
