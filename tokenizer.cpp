@@ -7,6 +7,8 @@
 #include <readline/readline.h>
 
 using namespace std;
+using std::string;
+using std::vector;
 
 /**
  * takes in a char and determines if the char is a special char ->  | ; < > &

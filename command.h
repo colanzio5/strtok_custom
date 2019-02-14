@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+using std::string;
+using std::vector;
+
 void get_pwd();
 
 void run_shell_cmd(vector<string> tokens, int &index);
