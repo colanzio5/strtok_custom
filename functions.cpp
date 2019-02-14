@@ -137,38 +137,6 @@ vector<string> strtok_custom(string input)
     return tokens;
 }
 
-/**
- * takes in a vector of strings and prints each
- * format -> [{token 1},{token 2}]
- * @param - tokens - the token vector to print
-*/
-void print_tokens(vector<string> tokens)
-{
-    int number_tokens = tokens.size();
-    int i = 0;
-
-    if (number_tokens > 0)
-    {
-        vector<string>::iterator it;
-        cout << '[';
-        for (it = tokens.begin(); it != tokens.end(); ++it)
-        {
-            cout << '{' << *it << '}';
-            if (i < number_tokens - 1)
-                cout << ',';
-
-            i++;
-        }
-        cout << ']';
-    }
-    cout << "\n";
-}
-
-const char *str_to_char(string str)
-{
-    return str.c_str();
-}
-
 std::string get_pwd()
 {
     try
