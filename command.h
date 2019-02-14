@@ -2,7 +2,7 @@
 #define COMMAND_H
 
 #include <string>
-#include <vector>;
+#include <vector>
 
 void get_pwd();
 
