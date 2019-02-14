@@ -137,14 +137,14 @@ vector<string> strtok_custom(string input)
     return tokens;
 }
 
-std::string get_pwd()
+string get_pwd()
 {
     try
     {
         char temp[10000];
         return (getcwd(temp, sizeof(temp)) ? std::string(temp) : std::string(""));
     }
-    catch (const std::exception &e)
+    catch (const exception &e)
     {
         cout << "Unable to obtain current directory " << '\n';
     }
@@ -174,10 +174,6 @@ void run_shell_cmd(vector<string> tokens, int &index)
     {
         cout << get_pwd() << '\n';
     }
-    else
-    {
-        cout << token << "  - cmd not implemented \n";
-    }
 }
 
 void run_system_cmd(vector<string> tokens, int &index)
@@ -193,6 +189,8 @@ void run_system_cmd(vector<string> tokens, int &index)
 
     if (last_token == "|")
     {
+        tokens.pop_back();
+        tokens.push_back(";");
         cout << "Pipe not implemented\n";
     }
 
