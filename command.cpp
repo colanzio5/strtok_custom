@@ -13,8 +13,6 @@
 #include <readline/readline.h>
 
 using namespace std;
-using std::string;
-using std::vector;
 
 void get_pwd()
 {
