@@ -15,22 +15,6 @@ using std::string;
 using std::vector;
 
 /**
- * this is a helper function that returns the current directory path
- */
-void get_pwd()
-{
-    try
-    {
-        char temp[10000];
-        cout << (getcwd(temp, sizeof(temp)) ? string(temp) : string("")) << '\n';
-    }
-    catch (const exception &e)
-    {
-        cout << "Unable to obtain current directory " << '\n';
-    }
-}
-
-/**
  * takes in a the set of tokens and an index of the token to run
  * shell commands are commands that we support directly with system api calls
  * pwd, cd
@@ -38,10 +22,13 @@ void get_pwd()
 void run_shell_cmd(vector<string> tokens, int &index)
 {
 
+    // get the token we're running
     string token = tokens[index];
 
+    // if the token is cd, were changing directories
     if (token == "cd")
     {
+        // if a single argument exists
         if (++index < tokens.size())
         {
             string cmd = tokens[index];
@@ -50,14 +37,25 @@ void run_shell_cmd(vector<string> tokens, int &index)
                 cout << "Directory does not exist or is not accessible." << '\n';
             }
         }
+        // alert user that cd accepts only one argument
         else
         {
             cout << token << " - accepts exactly one argument" << '\n';
         }
     }
+    // if the token is pwd, we're getting the current directory path
+    // todo: replace the try catch block with something more fault aware
     else if (token == "pwd")
     {
-        get_pwd();
+        try
+        {
+            char temp[10000];
+            cout << (getcwd(temp, sizeof(temp)) ? string(temp) : string("Unable to obtain current directory")) << '\n';
+        }
+        catch (const exception &e)
+        {
+            cout << "Unable to obtain current directory " << '\n';
+        }
     }
 }
 
@@ -105,6 +103,7 @@ void run_system_cmd(vector<string> tokens, int &index)
         {
             // wait for the child process to complete
             wait(&child_status);
+            // alert user of the runtime status of the command
             if (child_status < 0)
             {
                 cout << "\nProcess exited with error\n";
