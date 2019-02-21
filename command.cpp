@@ -92,7 +92,7 @@ void run_system_cmd(vector<string> tokens, int &index)
         // if execvp returns a status of < 0  an error has occured
         if (execvp(argv[0], &argv[0]) < 0)
         {
-            cout << "\nProcess exited with error";
+            cout << "\nUnable to execute " << argv[0];
             exit(1);
         }
     }
