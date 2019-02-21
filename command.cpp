@@ -79,24 +79,31 @@ void run_system_cmd(vector<string> tokens, int &index)
     pid_t pid;
     int status;
 
+    // fork the program
+    // if fork returns < 0 the forking the main process has failed
     if ((pid = fork()) < 0)
     {
         cout << "\nUnable to spawn program";
         exit(1);
     }
+    // if were in the child process
     else if (pid == 0)
     {
+        // if execvp returns a status of < 0  an error has occured
         if (execvp(argv[0], &argv[0]) < 0)
         {
             cout << "\nProcess exited with error";
             exit(1);
         }
     }
+    // otherwise we're in the parent process
     else
     {
+        // wait fot the process to complete
         while (wait(&status) != pid)
             ;
-
+        // if the child process exited with an ok status
+        // alert the user the process has completed
         if (status == 0)
         {
             cout << "\nProcess exited successfully";
