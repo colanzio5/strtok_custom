@@ -76,44 +76,30 @@ void run_system_cmd(vector<string> tokens, int &index)
     }
     argv.push_back(NULL);
 
-    // fork to create child process
-    pid_t child;
-    int child_status;
-    child = fork();
+    pid_t pid;
+    int status;
 
-    //if the child process is active
-    if (child == 0)
+    if ((pid = fork()) < 0)
     {
-        // run the commands
-        execvp(argv[0], &argv[0]);
-        // if execvp fails, the function will get to this point
-        cout << "\nProcess exited with error\n";
+        cout << "\nUnable to spawn program";
         exit(1);
     }
-    // otherwise it's the parent process
-    else
+    else if (pid == 0)
     {
-        // if the fork failed
-        if (child == (pid_t)(-1))
+        if (execvp(argv[0], &argv[0]) < 0)
         {
-            cout << "Unable to spawn program";
+            cout << "\nProcess exited with error";
             exit(1);
         }
-        else
+    }
+    else
+    {
+        while (wait(&status) != pid)
+            ;
+
+        if (status == 0)
         {
-            // wait for the child process to complete
-            wait(&child_status);
-            // alert user of the runtime status of the command
-            if (child_status < 0)
-            {
-                cout << "\nProcess exited with error\n";
-                return;
-            }
-            else
-            {
-                cout << "\nProcess exited successfully\n";
-                return;
-            }
+            cout << "\nProcess exited successfully";
         }
     }
 }
