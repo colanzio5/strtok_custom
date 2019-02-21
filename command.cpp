@@ -16,6 +16,9 @@ using namespace std;
 using std::string;
 using std::vector;
 
+/**
+ * this is a helper function that returns the current directory path
+ */
 void get_pwd()
 {
     try
@@ -29,6 +32,11 @@ void get_pwd()
     }
 }
 
+/**
+ * takes in a the set of tokens and an index of the token to run
+ * shell commands are commands that we support directly with system api calls
+ * pwd, cd
+ */
 void run_shell_cmd(vector<string> tokens, int &index)
 {
 
@@ -55,6 +63,12 @@ void run_shell_cmd(vector<string> tokens, int &index)
     }
 }
 
+/**
+ * takes in a the set of tokens and an index of the token to run
+ * runs the command using execvp in a child process and waits for the process to complete
+ * 
+ * todo: need to write test cases for specific error conditions like fork failing and child process never halting
+ */
 void run_system_cmd(vector<string> tokens, int &index)
 {
     // get the subset of tokens thats the next command to run
@@ -102,6 +116,13 @@ void run_system_cmd(vector<string> tokens, int &index)
     }
 }
 
+/**
+ * this function takes in a set of tokens from the strk_custom function
+ * it parses the set of tokens as commands and runs the commands respectively.
+ 
+ * todo: support pipe operators
+ * todo: support io redirection
+ */
 void execute_commands(vector<string> tokens)
 {
 
