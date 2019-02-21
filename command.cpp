@@ -80,39 +80,44 @@ void run_system_cmd(vector<string> tokens, int &index)
     }
     argv.push_back(NULL);
 
-    // run the command
-    pid_t child_pid = fork();
+    // fork to create child process
+    pid_t child;
     int child_status;
-    int loc;
+    child = fork();
 
-    // check if the fork failed
-    if (child_pid < 0)
+    //if the child process is active
+    if (child == 0)
     {
-        cout << "Unable to spawn program";
-        return;
+        // run the commands
+        execvp(argv[0], &argv[0]);
+        // if execvp fails, the function will get to this point
+        cout << "\nProcess exited with error\n";
+        exit(1);
     }
-
-    // if were in the child pid...
-    if (child_pid == 0)
-    {
-        child_status = execvp(argv[0], &argv[0]);
-        cout << "\n Unable to execute" << argv[1] << '\n';
-    }
-    // otherwise were in the parent pid...
+    // otherwise it's the parent process
     else
     {
-        waitpid(child_pid, &loc, WUNTRACED);
-    }
-    // once parent is done...
-    if (child_status < 0)
-    {
-        cout << "\n Process exited with error \n";
-        return;
-    }
-    else
-    {
-        cout << "\n Process exited successfully \n";
-        return;
+        // if the fork failed
+        if (child == (pid_t)(-1))
+        {
+            cout << "Unable to spawn program";
+            exit(1);
+        }
+        else
+        {
+            // wait for the child process to complete
+            wait(&child_status);
+            if (child_status < 0)
+            {
+                cout << "\nProcess exited with error\n";
+                return;
+            }
+            else
+            {
+                cout << "\nProcess exited successfully\n";
+                return;
+            }
+        }
     }
 }
 
@@ -136,7 +141,7 @@ void execute_commands(vector<string> tokens)
         }
     }
     if (pipe_found)
-        cout << "\n Pipe not implemented \n";
+        cout << "\nPipe not implemented\n";
 
     for (int i = 0; i < tokens.size(); i++)
     {
