@@ -131,6 +131,10 @@ void run_system_cmd(vector<string> tokens, int &index)
 void execute_commands(vector<string> tokens)
 {
 
+    cout << '\n';
+
+    // check if the set of commands contains any pipes
+    // if found replace w/ ';' and warn user pipes aren't implemented
     bool pipe_found = false;
     for (int i = 0; i < tokens.size(); i++)
     {
@@ -141,8 +145,11 @@ void execute_commands(vector<string> tokens)
         }
     }
     if (pipe_found)
-        cout << "\nPipe not implemented\n";
+        cout << "Pipe not implemented\n";
 
+    // iterate through the tokens and parse each token as a commend from left to right
+    // as of now we don't need to preparse and determine dependency tree for command set
+    // todo: preparse the set of commands as a DAG so we can start handeling IO redirect
     for (int i = 0; i < tokens.size(); i++)
     {
         string token = tokens[i];
@@ -163,4 +170,5 @@ void execute_commands(vector<string> tokens)
             run_system_cmd(tokens, i);
         }
     }
+    cout << '\n';
 }
